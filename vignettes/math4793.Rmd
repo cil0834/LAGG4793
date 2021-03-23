@@ -1,0 +1,77 @@
+---
+title: "Using MATH4793LAGGE"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{math4793}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+  
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Introduction
+This is a package I am currently in the process of making for my MATH 4793. The class focuses on statistical analysis of multivariate data, so the majority of the functions
+are going to pertain to handling and manipulating multivariate data. There is also no gurantee that the functions of the package are going to be used together since this package was made for a class.
+
+## Functions
+
+### myfirstfun
+This function was created as a test function to make sure that the package was able to be built and run. What this package does is it takes in a vector of numbers and returns the vector of numbers squared. Below is an example
+```{r}
+MATH4793LAGGE::myfirstfun(1:10)
+```
+
+### multivariate_app
+This functions creates a shiny app that takes in a csv file of multivariate data and outputs three plots and two text outputs that are controlled by six widgets.
+
+#### Plot 1
+The first plot is a two dimensional plot of two variables of the data that is read in. The x and y axis are controlled by widgets 2 and 3 discussed later. The plot is also clickable. If a point on the plot is clicked then the correlation of the data will be calculated and printed below if that point were removed from the data set. Additionally, there is a widget that can be clicked to add a linear regression line and equation to this plot.
+
+#### Plot 2
+The second plot is somewhat similar to the first one in that it is a two dimensional plot whose axis are controlled by widgets 2 and 3. However, this plot is different, because the data of this graph can have its axis rotated and replotted. The way the data is recalculated will be discussed in the theory section. Additionally, as the graph is rotated the correlation of the data is output on the graph, and the value that the plot needs to be rotated in radians in order for the covariance term of the rotated graph to be zero is output underneath this graph.
+
+#### Plot 3
+The third plot is a three dimensional plot of the data with a regression plane going through the data points. The axis of this plot is controlled by widgets 2, 3, and 4.
+
+#### Widget 1
+The first widget takes in the data that will be used to make the plots. The data has to be a csv file otherwise the app won't work
+
+#### Widget 2
+The second widget determines what column of the data that is read in is used for the x-axis of the graphs
+
+#### Widget 3
+The third widget determines what column of the data that is read in is used for the y-axis of the graphs.
+
+#### Widget 4 
+The fourth widget determines what column of the data that is read in is used for the z-axis of the last plot.
+
+#### Widget 5
+The fifth widget determines if a linear regression line is plotted through the first and second plots. Additionally, a linear regression equation is calculated and output on the plot
+
+#### Widget 6
+The sixth widget determines the angle that the second graph's axis is rotated. The values are between 0 and $\frac{\pi}{2}$ meaning that we only care about first quadrant values.
+
+#### Theory
+
+The primary theory that is used in this function is how to rotate data points. In order to rotate the x and y data we use the following equations
+
+$$
+\tilde{x} = xcos(\theta) + ysin(\theta)
+$$
+
+$$
+\tilde{y} = -xsin(\theta) + ycos(\theta)
+$$
+
+We also need to find the point where the covariance between the two rotated axis is zero since this point is more convenient to work with. We use the following equation to do this
+
+$$
+\tilde s_{12} = s_{12}(cos(\theta)^2 - sin(\theta)^2) - (s_{11} - s_{22})sin(\theta)cos(\theta)
+$$
