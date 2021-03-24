@@ -1,5 +1,3 @@
-library(ggplot2)
-library(ggforce)
 #' t-test
 #'
 #' @Description This function runs a t-test to see if a given set of means for a list of variables is possible given certain data.
@@ -11,11 +9,7 @@ library(ggforce)
 #' @return The function returns a list of various information about the data and about the results of the test.
 #' @import ggplot2, ggforce
 #'
-#' @examples
-#' t_test(data, means, alpha = 0.1)
 t_test = function(data, means, alpha=0.05){# data: 2x2 data matrix means: length 2 vector of means alpha: confidence level
-  library(ggplot2)
-  library(ggforce)
   n = dim(data)[1]
   p = dim(data)[2]
   S = cov(data)
@@ -57,8 +51,8 @@ t_test = function(data, means, alpha=0.05){# data: 2x2 data matrix means: length
         s = eigens$vectors[2,1]
         angle = atan(s/c)
 
-        g = ggplot() + geom_ellipse(aes(x0 = x_bar[i], y0 = x_bar[j], a = half_1, b = half_2, angle = angle))
-        g = g + labs(x = "x", y = "y", title = "Confidence Ellipse")
+        g = ggplot2::ggplot() + ggforce::geom_ellipse(aes(x0 = x_bar[i], y0 = x_bar[j], a = half_1, b = half_2, angle = angle))
+        g = g + ffplot2::labs(x = "x", y = "y", title = "Confidence Ellipse")
         print(g)
       }
     }
@@ -74,4 +68,3 @@ t_test = function(data, means, alpha=0.05){# data: 2x2 data matrix means: length
   invisible(list(Test_Result =test, c_squared = csq, critical_value = crit_value, eigen_vectors = eigens$vectors, eigen_values = eigens$values,
                  major_lengths = major_lengths, minor_lengths = minor_lengths, axis_ratio = ratio))
 }
-
