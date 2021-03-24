@@ -1,19 +1,21 @@
 ---
-title: "Using MATH4793LAGGE"
-date: "`r Sys.Date()`"
+title: "Multivariate_Shiny"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{math4793}
+  %\VignetteIndexEntry{Multivariate_Shiny}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-  
 ---
 
-```{r setup, include = FALSE}
+```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+```
+
+```{r setup}
+library(LAGG4793)
 ```
 
 # Introduction
@@ -25,7 +27,7 @@ are going to pertain to handling and manipulating multivariate data. There is al
 ### myfirstfun
 This function was created as a test function to make sure that the package was able to be built and run. What this package does is it takes in a vector of numbers and returns the vector of numbers squared. Below is an example
 ```{r}
-MATH4793LAGGE::myfirstfun(1:10)
+LAGG4793::myfirstfun(1:10)
 ```
 
 ### multivariate_app

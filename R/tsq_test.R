@@ -1,25 +1,24 @@
-#' t-test
+
+#' tsq_test
 #'
-#' @Description This function runs a t-test to see if a given set of means for a list of variables is possible given certain data.
-#'
-#' @param data- a data frame
+#' @param data a data frame
 #' @param means the means that are being tested
-#' @param alpha - the alpha level we are testing at
+#' @param alpha the alpha level we are testing at
 #'
 #' @return The function returns a list of various information about the data and about the results of the test.
-#' @import ggplot2, ggforce
+#' @export
 #'
-t_test = function(data, means, alpha=0.05){# data: 2x2 data matrix means: length 2 vector of means alpha: confidence level
+tsq_test = function(data, means, alpha=0.05){# data: 2x2 data matrix means: length 2 vector of means alpha: confidence level
   n = dim(data)[1]
   p = dim(data)[2]
-  S = cov(data)
+  S = stats::cov(data)
   S_i = solve(S)
   x_bar = as.matrix(colMeans(data))
   csq = n*t((x_bar - means))%*%S_i%*%(x_bar-means)
 
-  df1 = dim(ovens.df)[2]
-  df2 = n - dim(ovens.df)[2]
-  f = qf(0.05, df1, df2, lower.tail = FALSE)
+  df1 = dim(data)[2]
+  df2 = n - dim(data)[2]
+  f = stats::qf(0.05, df1, df2, lower.tail = FALSE)
   crit_value = (df1*(n-1)/df2)*f
 
   eigens = eigen(S)
@@ -51,8 +50,8 @@ t_test = function(data, means, alpha=0.05){# data: 2x2 data matrix means: length
         s = eigens$vectors[2,1]
         angle = atan(s/c)
 
-        g = ggplot2::ggplot() + ggforce::geom_ellipse(aes(x0 = x_bar[i], y0 = x_bar[j], a = half_1, b = half_2, angle = angle))
-        g = g + ffplot2::labs(x = "x", y = "y", title = "Confidence Ellipse")
+        g = ggplot2::ggplot() + ggforce::geom_ellipse(ggplot2::aes(x0 = x_bar[i], y0 = x_bar[j], a = half_1, b = half_2, angle = angle))
+        g = g + ggplot2::labs(x = "x", y = "y", title = "Confidence Ellipse")
         print(g)
       }
     }
