@@ -7,7 +7,10 @@
 #'
 #' @return The function returns a list of various information about the data and about the results of the test.
 #' @export
-#'
+#' @example
+#' mat = matrix(c(rnorm(20, sd = 1, mean = 3), rnorm(20, sd = 2, mean = 6)), byrow = FALSE, ncol=2)
+#' means = matrix(c(2.75, 6.25), nrow = 2)
+#' output = LAGG4793::tsq_test(mat, means)
 tsq_test = function(data, means, alpha=0.05){# data: 2x2 data matrix means: length 2 vector of means alpha: confidence level
   n = dim(data)[1]
   p = dim(data)[2]
