@@ -1,7 +1,7 @@
 #' Normality Shiny App
 #'
 #' @description This app is for checking normality for data. There are a total of 8 widgets 3 data frames and 7 plots that run various tests on
-#' the normality of data
+#' the normality of data. Full description can be found in the normality vignette.
 #' @import shiny
 #'
 #' @export

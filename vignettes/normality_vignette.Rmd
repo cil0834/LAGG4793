@@ -17,3 +17,175 @@ knitr::opts_chunk$set(
 ```{r setup}
 library(LAGG4793)
 ```
+
+# Introduction
+This vignette is going to discuss both how to use the normality_app function and the theory behind it. The general purpose of the shiny app is to
+look at a set of data and determine the normality of said data using both univariate and multivariate tests. An explanation about what each of the plots of the app does, and in doing so an explanation of the widgets, how they interact with each plot, and the theory behind the tests will be given as well.
+
+## Boxplot
+The first plot is the boxplot. What this plot does is it implements two proportion tests of normality on each variable of the data. If the data passes each test then the plot is green. If only the first test, defined in the theory, is passed then the boxplot is orange. If only the second test is passed then the plot is yellow. Finally, if neither of the tests are passed then the boxplots are red.
+
+### Proportion test theory
+What the normality tests does is it makes an assumption that if data is normal that a certain proportion of data should lie within one and two standard deviations of the sample data. As a results the proportion test is split into two tests defined below. One drawback of this test is that it does not look at how the data is distributed within the data set meaning that it may think a non normal set of data is normal.
+
+#### Test 1
+Test one uses the following formula
+
+$$
+|\hat p_{i1} - 0.683| > \frac{1.396}{\sqrt{n}}
+$$
+Where $\hat p_{i1}$ is the proportion of data that lies within one sample standard deviation of the sample mean $(\bar x_i - \sqrt{s_{ii}}, ~\bar x_i + \sqrt{s_{ii}})$ and where $n$ is the total number of observations. If this equality holds true then the test has failed and one would conclude that the data is not normal.
+
+#### Test 2
+Test two uses a formula similar to test 1 as seen below
+
+$$
+|\hat p_{i2} - 0.954| > \frac{.628}{\sqrt{n}}
+$$
+
+Where $\hat p_{i2}$ is the proportion of data that lies within two sample standard deviation of the sample mean $(\bar x_i - 2\sqrt{s_{ii}}, ~\bar x_i + 2\sqrt{s_{ii}})$ and where $n$ is the total number of observations. Similarly to test 1 if this equality holds true then the test has failed and one would conclude that the data is not normal.
+
+
+## QQ Plot
+The QQ Plot plots the quantiles of a variable from the imported data set using the x_i widget and then uses a shapiro-wilk test to determine if the data is normal or not.The plot outputs the shapiro-wilk test p-value and an $r^2$ value between the observed values and the quantiles. Underneath the QQ plot is a table outputting the r squared values that correspond to each variable.
+
+### Theory
+Below is the theory for making the $r^2$ value, calculating the quantiles, and making the QQ plot itself.
+
+#### Calculating Quantiles
+To calculate the quantiles the probability values need to be calculated first using the below formula
+$$
+\frac{j-.5}{n}
+$$
+where j is the jth obeservation and n is the total number of observations. Once this probability is found it's quantile can then be found. Below is the code that would be used to find the quantiles for 10 observations
+```{r}
+n = 10
+ qnorm((1:n - .5)/n, 0, 1)
+```
+
+#### Constructing the QQ plot
+To construct the QQ plot the observations are sorted and plotted against the quantiles. Below is some code to do this given normal data
+```{r}
+n = 30
+quantiles = qnorm((1:n - .5)/n, 0, 1)
+observations = sort(rnorm(n))
+plot(quantiles, observations)
+```
+
+#### R_sq
+Below is the formlual for calculating $r^2$ between quantiles and their observed values.
+
+$$
+r_Q = \frac{\sum^n_{j=1}(x_{j}-\bar x)(q_j-\bar q)}{\sqrt{\sum^n_{j=1}(x_j-\bar x)^2}sqrt{\sum^n_{j=1}(q_j-\bar q)^2}}
+$$
+ 
+## 1-alpha ellipse
+The next plot is a $1 - \alpha$ ellipse. What this ellipse does is it makes an ellipse that contains $1-\alpha$ of the data. The data is chosen using the X variable and Y variable widgets The size of the ellipse can be changed by the alpha widget. Notice that as alpha decreases the ellipse increases. This is because as alpha decreases the amount of data the ellipse will contain increases. The sample data is also plotted and one can see how well the ellipse contains the data.
+
+### Equation for the ellipse
+Below is the equation for the ellipse. If the equality does not hold then the point lies outside of the ellipse.
+
+$$
+(x-\bar x)S^{-1}(x - \bar x) \leq \chi^2_2(\alpha)
+$$
+
+
+## Chi-squared Plots
+The first Chi-squared plot takes the data and calculates the squared distances of the data and plots them against their quantiles. The squared distances are then compared to a chi-squared value to determine if a point is an outlier or not based on an alpha level that is controlled by the outlier_alpha widget.The second plot is generated when a point on the first plot is clicked. When this point is clicked the point is removed and a new plot is made. Additionally, a table of the squared distances and their corresponding quantiles is output.
+
+### Theory
+In order to generate the plots the quantiles, distance squared values, and chi-squared values must be calculated.
+
+#### Calculating Quantiles
+Calculating the quantiles is exactly the same as when it was done in the QQ plot. Below is the formula
+$$
+\frac{j-.5}{n}
+$$
+where j is the jth observation and n is the total number of observations. Once this probability is found it's quantile can then be found. Below is the code that would be used to find the quantiles for 10 observations
+
+
+#### D Squared
+Below is the formula to calculate the $d^2$ values
+$$
+d^2 = (x-\bar x)S^{-1}(x - \bar x)
+$$
+ 
+#### Determining Outlier
+If the equality below holds then $d^2$ is an outlier based on the alpha level chosen.
+$$
+(x-\bar x)S^{-1}(x - \bar x) \geq \chi^2_2(\alpha)
+$$
+
+## Z table
+The Z table is created by taking the z score of each data point using the formula below
+
+$$
+Z_{ij} = \frac{x_{ij} - \bar x_j}{\sqrt{s_{jj}}}
+$$
+where $x_{ij}$ is the ith observation of the jth variable, $\bar x_j$ is the mean of the jth variable, and $\sqrt{s_{jj}}$ is the standard deviation of the jth variable
+
+
+
+## maximization equation vs lambda plot
+The $l(\lambda)$ vs $\lambda$ graph plots the maximization equation equation for the boxcox transformation vs values of $\lambda$ for a given variable that is controlled by the boxcox widget. Additionally, the value of $\lambda$ that maximizes the equation is printed on the graph.
+
+### Theory 
+Below is the maximization equation
+
+$$
+l(\lambda) = \frac{-n}{2}ln[\frac{1}{n}\sum^n_{j=1}(x_j^{(\lambda)}- \bar x^{(\lambda)})^2] + (\lambda-1)\sum^n_{j=1}ln(x_j)
+$$
+
+and where $\bar x^{\lambda}$ is defined as 
+
+$$
+\bar x^{\lambda} = \frac{1}{n}\sum^n_{j=1}x_j^{(\lambda)}
+$$
+
+and where $x_j^{(\lambda)}$ is defined as 
+
+$$
+x_j^{(\lambda)} = \frac{x^\lambda - 1}{\lambda}, ~\lambda \neq 0
+$$
+and 
+$$
+x_j^{(\lambda)} = ln(x), ~ \lambda = 0
+$$
+
+## QQ-Plot BoxCox
+The QQ-Plot does a BoxCox transformation on a variable chosen by the BoxCox variable widget and plots it versus its quantiles. The value of lambda is chosen based on the BoxCox Lambda widget. A shapiro- wilks test is then run on the data 
+
+### Theory
+
+#### BoxCox Equation
+Below is the BoxCox equation
+
+$$
+x_j^{(\lambda)} = \frac{x^\lambda - 1}{\lambda}, ~\lambda \neq 0
+$$
+and 
+$$
+x_j^{(\lambda)} = ln(x), ~ \lambda = 0
+$$
+
+### Calculating Quantiles
+Calculating the quantiles is exactly the same as when it was done in the QQ plot. Below is the formula
+$$
+\frac{j-.5}{n}
+$$
+where j is the jth observation and n is the total number of observations. Once this probability is found it's quantile can then be found. Below is the code that would be used to find the quantiles for 10 observations
+
+
+### R_sq
+Below is the formula for calculating $r^2$ between quantiles and their observed values.
+
+$$
+r_Q = \frac{\sum^n_{j=1}(x_{j}-\bar x)(q_j-\bar q)}{\sqrt{\sum^n_{j=1}(x_j-\bar x)^2}sqrt{\sum^n_{j=1}(q_j-\bar q)^2}}
+$$
+
+
+
+
+
+
+

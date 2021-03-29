@@ -14,7 +14,7 @@ proportion_norm = function(data){
     sample_data = data[1,i]
 
     #if(class(sample_data) == "numeric" || class(sample_data) == "integer"){
-      curr_variable = data[,1]
+      curr_variable = data[,i]
       standard_deviation = sd(curr_variable)
       m = mean(curr_variable)
 
@@ -56,7 +56,7 @@ proportion_norm = function(data){
   return(results)
 }
 
-qq_measurements = function(data){# vector of data
+qq_measurements = function(data){# data: vector of data
   # inputs in data and gives out the quantile measurements for the univariate case
   # a dataframe of data
   obs = sort(data)
@@ -65,7 +65,8 @@ qq_measurements = function(data){# vector of data
 }
 
 
-r_q = function(obs, qs){
+r_q = function(obs, qs){# obs: A vector of the observed values, qs: A vector of quantiles
+  # Takes in observation and quantile values and returns its r squared value
 
   q_m = mean(qs)
   x_m = mean(obs)
@@ -81,7 +82,8 @@ r_q = function(obs, qs){
   num/denom
 }
 
-z_mat <- function(data){
+z_mat <- function(data){ # data: A data frame of values
+  # takes in a data set and returns the z score for each observation
   m = colMeans(data)
   co = cov(data)
   p = dim(data)[2]
@@ -102,7 +104,8 @@ z_mat <- function(data){
 }
 
 
-box_cox = function(x, lambda = 1){
+box_cox = function(x, lambda = 1){ #x: vector of data, lambda: The value for lambda
+  # performs box transformation on the data
   if (lambda == 0){
     x = log(x)
   }
@@ -112,7 +115,8 @@ box_cox = function(x, lambda = 1){
   x
 }
 
-boxcox_max = function(lambda, x){
+boxcox_max = function(lambda, x){ # lambda: value of lambda for BoxCox transformation, x: vector of data
+  # retruns the maximation equation for BoxCox transformation
   n = length(x)
   box_x = box_cox(x, lambda)
   mean_l = sum(box_x)/n
@@ -121,7 +125,8 @@ boxcox_max = function(lambda, x){
 }
 
 
-drop_data_chi = function(data, point){
+drop_data_chi = function(data, point){ #data: the data frame, point: the point that will be dropped from the dataframe
+  # takes in a data frame and returns a list of squaed distance values with their corresponding quantiles.
   n = length(data[,1])
   mat = as.matrix(data)
   col_names = colnames(data)
