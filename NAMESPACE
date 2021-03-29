@@ -2,5 +2,6 @@
 
 export(multivariate_app)
 export(myfirstfun)
+export(normality_app)
 export(tsq_test)
 import(shiny)

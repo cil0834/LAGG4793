@@ -1,19 +1,6 @@
 #' Multivariate Shiny App
 #'
-#' @description There are a total of six widgets that control the three graphs.
-#' The first graph is a clickable y vs. x plot of the data.
-#' When a point is clicked on the plot the drop-one correlation of the data is output.
-#' The first plot also has a linear regression aspect to it as well if the linear regression widget is toggled
-#' The second graph is also a y vs. x plot of the data, however, there is a widget that rotates the data
-#' and the correlation of the data is output as the graph is rotated.
-#' The final graph is simply a three dimensional graph of the data.
-#' The first widget is a widget that asks for a csv file of data.
-#' The second widget controls the x-axis of the graphs that are output. In other words, the value that is
-#' selected by this widget controls what column is used for the x axis of the graphs.
-#' The third widget control he y-axis of the graphs. And it functions similarily to the x-axis widget.
-#' The fourth widget controls the z-axis of the last graph only.
-#' The fifth widget determines if the first graph has a linear regression line and equation or not
-#' The sixth widget controls the angle that the second plot is rotated
+#' @description This is the multivariate shiny app that contains 6 widgets and 3 graphs that show various results for multivariate data.
 #' @import shiny
 #'
 #' @export
@@ -22,5 +9,5 @@
 #' 'multivariate_app()'
 #'
 multivariate_app<-function(){
-  shiny::runApp(system.file("multivariate_shiny", package="MATH4793LAGGE"),launch.browser = TRUE)
+  shiny::runApp(system.file("multivariate_shiny", package="LAGG4793"),launch.browser = TRUE)
 }
