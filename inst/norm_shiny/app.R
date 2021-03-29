@@ -219,7 +219,7 @@ server <- function(input, output, session) {
       df_1 = data.frame("qs" = qs, "observations" = observations)
       ggplot(data = df_1, aes(x = qs, y = observations)) + geom_point() + geom_smooth(method='lm', formula= y~x) +
         labs(title = paste(input$x_i, " QQ-Plot")) + geom_text(x=m, y=std_2, label=paste("P-value", p_value)) +
-        geom_text(x=m, y= std_1, label=paste("R", rq))
+        geom_text(x=m, y= std_1, label=paste("R_sq", rq))
     }
   })
 
@@ -320,20 +320,23 @@ server <- function(input, output, session) {
 
   output$box_cox <- renderPlot({
     x = unlist(data()[, colnames(data()) %in% input$boxcox])
-    box = boxcox(x, lambda = seq(-2, 2, by = 0.01))
-    lam = box$lambda
-    obj = box$objective
+    lam = seq(-2, 2, by = 0.01)
+    obj = c()
+    for(i in lam){
+      obj = c(obj, boxcox_max(i,x))
+    }
 
     inflection_point_y = max(obj)
     index = match(inflection_point_y, obj)
     inflextion_point_x = lam[index]
 
     df = data.frame("lam" = lam, "obj" = obj)
-
+    end_1 = obj[1]
+    end_2 = obj[length(obj)]
     ggplot(df, aes(x = lam, y = obj)) +
       geom_point(colour = "blue") +
       labs(title = "l(\u03BB) vs. \u03BB", y = "l(\u03BB)", x = "\u03BB") +
-      geom_text(x=inflextion_point_x, y=(inflection_point_y - 0.02), label=paste("Critical \u03BB:", round(inflextion_point_x,4)))
+      geom_text(x=inflextion_point_x, y=(end_1 + end_2)/2, label=paste("Critical \u03BB:", round(inflextion_point_x,4)))
   })
 
   output$trans_plot <- renderPlot({
@@ -354,7 +357,7 @@ server <- function(input, output, session) {
       df_1 = data.frame("qs" = qs, "observations" = observations)
       ggplot(data = df_1, aes(x = qs, y = observations)) + geom_point() + geom_smooth(method='lm', formula= y~x) +
         labs(title = paste(input$boxcox, " QQ-Plot BoxCox")) + geom_text(x=m, y=std_2, label=paste("P-value", p_value)) +
-        geom_text(x=m, y= std_1, label=paste("R", rq))
+        geom_text(x=m, y= std_1, label=paste("R_sq", rq))
     }
   })
 

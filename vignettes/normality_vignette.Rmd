@@ -76,7 +76,7 @@ plot(quantiles, observations)
 Below is the formlual for calculating $r^2$ between quantiles and their observed values.
 
 $$
-r_Q = \frac{\sum^n_{j=1}(x_{j}-\bar x)(q_j-\bar q)}{\sqrt{\sum^n_{j=1}(x_j-\bar x)^2}sqrt{\sum^n_{j=1}(q_j-\bar q)^2}}
+r_Q = \frac{\sum^n_{j=1}(x_{j}-\bar x)(q_j-\bar q)}{\sqrt{\sum^n_{j=1}(x_j-\bar x)^2}\sqrt{\sum^n_{j=1}(q_j-\bar q)^2}}
 $$
  
 ## 1-alpha ellipse
