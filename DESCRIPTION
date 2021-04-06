@@ -7,7 +7,7 @@ Maintainer: The package maintainer <yourself@somewhere.net>
 Description: Package for MATH4793 class.
 License: MIT + file LICENSE
 Encoding: UTF-8
-Imports: ggforce, ggplot2, shiny, stats
+Imports: ggforce, ggplot2, shiny, stats, ggpubr
 LazyData: true
 URL: https://github.com/cil0834/LAGG4793
 BugReports: https://github.com/cil0834/LAGG4793/issues
