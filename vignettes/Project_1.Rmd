@@ -24,7 +24,7 @@ welding.csv$X = NULL
 The following project is investigating the welding data set and how robotic welders stay within a range of designated parameters while welding drive shafts of automobiles. In this project I will be looking at the normality of the data set. Then I will use control charts, control ellipses, and univariate $\bar x$ charts to determine if the automated welding is sufficient. 
 
 ## Importance
-As mentioned I am investigating if the robotic welders stay within the designated parameters. This is an important problem, because if the welders are not staying withing their designated parameters they will not produce a quality product. We can use $T^2$ charts, control ellipses, and $\bar x$ charts to determine points that are far outside the parameters and then the engineers can determine what went wrong.
+As mentioned I am investigating if the robotic welders stay within the designated parameters. This is an important problem, because if the welders are not staying withing their designated parameters they will not produce a quality product. Additionally, if the drive shafts are not being welded correctly it could cause the cars to not perform correctly leading to accidents and lawsuits. We can use $T^2$ charts, control ellipses, and $\bar x$ charts to determine points that are far outside the parameters and then the engineers can determine what went wrong.
 
 ## Data
 The variables that are being investigated are as follow
@@ -101,6 +101,7 @@ LAGG4793::bivariate_check(welding_log, 0.5)
 ```{r}
 LAGG4793::bivariate_check(welding_log, 0.05)
 ```
+
 Unsurprisingly we get the same amount of points inside of the graph as outside of it
 
 ## Chi-sq QQ Plot
@@ -108,6 +109,7 @@ Now I will check the normality using the chi-squared QQ plot
 ```{r}
 LAGG4793::chisq_plot(welding.csv)
 ```
+
 From the above graph and the p-value of the shapiro wilk test we can see that the data fails the test of normality at an alpha of 0.05. Thus we are fairly confident that this data is not normal. To try and fix the data I will take the log transformation of the gas flow
 
 
@@ -115,10 +117,11 @@ From the above graph and the p-value of the shapiro wilk test we can see that th
 ```{r}
 LAGG4793::chisq_plot(welding_log)
 ```
+
 This data has a little higher p-value, but it still fails the test of normality at an alpha of 0.05.
 
 ## Normality Conclusion
-As a conclusion we can say that for the voltage, current, and feed speed are normal independent of the other values. However, taking into account all of the variables together using the Chi-squared QQ plot we see that the data is not normal. Additionally, transforming the non-normal gas flow variable using a log transformation is not particularly effective in making the data normal. Nonetheless, we will still use the data where the log of gas flow is taken since the p value was a little higher in the Chi-sq QQ plot and because this is how it is done in the book, whose example I am following for this project.
+As a conclusion we can say that for the voltage, current, and feed speed are normal independent of the other values. However, taking into account all of the variables together using the Chi-squared QQ plot we see that the data is not normal. Additionally, transforming the non-normal gas flow variable using a log transformation is not particularly effective in making the data normal. Nonetheless, we will still use the data where the log of gas flow is taken since the p value was a little higher in the Chi-sq QQ plot and because this is how it is done in the book, whose example I am following for this project. Something to note is that normality is not required to find extraordinary points so this is not too big of a deal.
 
 # T-squared chart
 Now I am going to make the $T^2$ chart for the data
@@ -126,30 +129,8 @@ Now I am going to make the $T^2$ chart for the data
 ```{r}
 LAGG4793::Tsq_chart(welding_log)
 ```
+
 From this plot we can see that observation 31 seems to be an outiler. Since it is out of control. 
-
-
-## Investigating the Unusual Point
-We will not investigate which variable seems to be causing this problem. To do this I will check the z scores of each variable
-```{r}
-m = colMeans(welding_log)
-voltage_sd = sd(welding_log[,1])
-current_sd = sd(welding_log[,2])
-feed_sd = sd(welding_log[,3])
-gas_sd = sd(welding_log[,4])
-
-
-(welding_log[31,1] - m[1])/voltage_sd
-(welding_log[31,2] - m[2])/current_sd
-(welding_log[31,3] - m[3])/feed_sd
-(welding_log[31,4] - m[4])/gas_sd
-
-
-
-```
-From the z scores we see that the gas feed variable is highly unusual thus we would recommend the engineers to look at this variable to see what went wrong.
-
-
 
 # 99% Quality Control Ellipse
 I will now make a log_gas_flow
@@ -166,6 +147,39 @@ And from the T-squared chart we know this point is point 31.
 welding_log[31,]
 ```
 This is reconfirmed by the above output since this point has a log gas flow of greater than 4 which is the only point where this is true.
+
+# Gas Flow Control Chart
+I will now make a control chart of gas flow
+```{r}
+control_chart(welding_log$Gasf, "Log Gas Flow")
+```
+
+We can see that observation 31 is above the upper control limit meaning this is an extraordinary observation As a result we would recommend that the engineers or person in charge of the automatization look further into this point to see what went wrong.
+
+
+# Conclusion
+As mentioned observation 31 is an extraordinary point. As a result, I will now investigate which variable(s) cause(s) this point to be so much different.
+
+## Investigating the Unusual Point
+We will not investigate which variable seems to be causing this problem. To do this I will check the z scores of each variable
+```{r}
+m = colMeans(welding_log)
+voltage_sd = sd(welding_log[,1])
+current_sd = sd(welding_log[,2])
+feed_sd = sd(welding_log[,3])
+gas_sd = sd(welding_log[,4])
+
+
+(welding_log[31,1] - m[1])/voltage_sd
+(welding_log[31,2] - m[2])/current_sd
+(welding_log[31,3] - m[3])/feed_sd
+(welding_log[31,4] - m[4])/gas_sd
+```
+
+From the z scores we see that the gas feed variable is highly unusual thus we would recommend the engineers to look at this variable to see what caused the gas flow of observation 31 to change so much compared with the other observations.
+
+
+
 
 
 

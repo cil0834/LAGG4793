@@ -1,14 +1,16 @@
-#' Project 1 dataset
+#' Data of automated welding of automobiles
 #'
-#' A dataset with 2 quantative variables
-#' The interest is to see what parameters work the best for welding a driveshaft of automobiles
+#' The data looks at 40 different data points of how a robot welds a driveshaft to an autombile
 #'
-#' @format A data frame with 15 rows 2 variables:
+#' @format A data set with 40 entries and 5 variables:
+#'
 #' \describe{
-#' \item{Voltage}{volts}
-#' \item{Current}{amps}
-#' \item{Feed Speed}{in/min}
-#' \item{Gas Flow}{cfm}
+#' \item{X}{The observation}
+#' \item{Voltage}{The voltage at which the driveshaft is welded in volts}
+#' \item{Current}{The current at which the driveshaft is welded in amps}
+#' \item{Feedspd}{The feed speed the driveshaft is welded in inches per minute}
+#' \item{Gasf}{The gas flow the driveshaft is welded in cubic feet per minute}
 #' ...
 #' }
-#' @source \url{{}
+#' @source {Johnson, R. A., & Wichern, D. W. (1992). Applied multivariate statistical analysis. Englewood Cliffs, N.J: Prentice Hall.}
+"project_data"

@@ -12,7 +12,10 @@
 #' @export
 #'
 #' @examples
-#' data = LAGG4793
+#' data = LAGG4793::project_data
+#' x = data$Voltage
+#' y = data$Current
+#' quality_ellipse(0.5, y, x, "Current", "Voltage")
 quality_ellipse = function(alpha, y, x, y_names, x_names){ # alpha: The alpha level for the ellipse, y: the y variable, x: the x variable
   dt = data.frame("x"=x, "y"=y)
   m = colMeans(dt)

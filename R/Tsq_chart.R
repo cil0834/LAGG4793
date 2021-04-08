@@ -27,11 +27,11 @@ Tsq_chart = function(data){ # a dataframe
 
 
   observation = 1:n
-  df = data.frame("observation" = observation, "Tsq" = tsqs)
+  df = data.frame("observation" = observation, "tsqs" = tsqs)
 
 
 
-  g = ggplot2::ggplot(data = df, ggplot2::aes(x=observation, y = Tsq)) +
+  g = ggplot2::ggplot(data = df, ggplot2::aes(x=observation, y = tsqs)) +
     ggplot2::geom_point() +
     ggplot2::geom_hline(yintercept=ucll, linetype="dashed") +
     ggplot2::geom_hline(yintercept=uclu) +

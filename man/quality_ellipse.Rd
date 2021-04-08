@@ -24,5 +24,8 @@ a (100-alpha)% ellipse
 Creates a quality ellipse based on two variables
 }
 \examples{
-data = LAGG4793
+data = LAGG4793::project_data
+x = data$Voltage
+y = data$Current
+quality_ellipse(0.5, y, x, "Current", "Voltage")
 }

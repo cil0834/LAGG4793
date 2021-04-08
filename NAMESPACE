@@ -3,6 +3,7 @@
 export(Tsq_chart)
 export(bivariate_check)
 export(chisq_plot)
+export(control_chart)
 export(multivariate_app)
 export(myfirstfun)
 export(normality_app)
