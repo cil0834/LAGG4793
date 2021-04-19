@@ -15,7 +15,7 @@
 #' df = LAGG4793::t.84
 #' PCA_decomposition(df)
 PCA_decomposition = function(df){
-  S = cov(df)
+  S = stats::cov(df)
   p = dim(S)[1]
   eigens_sig = eigen(S)
   values_sig = eigens_sig$values

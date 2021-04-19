@@ -36,7 +36,7 @@ lambda_estimation_cor <- function(data, indices){
 #' @return- bootstrap eigen vector value
 #' @export
 vec_estimation_cov <- function(data, indices, p){
-  S <- cov(data[indices,])
+  S <- stats::cov(data[indices,])
   E <- eigen(S)
 
   lambda <-E$vectors[,p]
@@ -51,12 +51,9 @@ vec_estimation_cov <- function(data, indices, p){
 #' @return- bootstrap eigen vector value
 #' @export
 vec_estimation_cor <- function(data, indices, p){
-  S <- cov2cor(cov(data[indices,]))
+  S <- stats::cov2cor(stats::cov(data[indices,]))
   E <- eigen(S)
 
   lambda <-E$vectors[,p]
   return(c(lambda))
 }
-
-
-

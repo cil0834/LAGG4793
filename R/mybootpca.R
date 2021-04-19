@@ -29,7 +29,7 @@ mybootpca = function(data, alpha, iter = 100, cov = TRUE, e_vec = 1)
     vec <- boot::boot(data,LAGG4793::vec_estimation_cov, R = iter, p = e_vec)
     eig_vals = eigen(mat)$values
   }else{
-    mat = cov2cor(cov(data))
+    mat = stats::cov2cor(stats::cov(data))
     vals <-boot::boot(data,LAGG4793::lambda_estimation_cor, R = iter)
     vec <- boot::boot(data,LAGG4793::vec_estimation_cor, R = iter, p = e_vec)
     eig_vals = eigen(mat)$values
@@ -37,11 +37,11 @@ mybootpca = function(data, alpha, iter = 100, cov = TRUE, e_vec = 1)
 
   for(i in 1:p)
   {
-    h <- hist(vals$t[,i], plot = FALSE)
+    h <- graphics::hist(vals$t[,i], plot = FALSE)
     d <- h$density
     den <- d/max(d)
-    hist(vals$t[,i], freq = TRUE,
-         col = rgb(0,den,1-den^2, 0.7),
+    graphics::hist(vals$t[,i], freq = TRUE,
+         col = grDevices::rgb(0,den,1-den^2, 0.7),
          main = expression(paste("Bootstrap distribution of ", widehat(lambda)[i])), xlab = bquote(lambda~.(i)))
   }
 
@@ -49,7 +49,7 @@ mybootpca = function(data, alpha, iter = 100, cov = TRUE, e_vec = 1)
   right = c()
 
   for(i in 1:p){
-    ci <- quantile(vals$t[,i], c(0.05/2, 1-0.05/2))
+    ci <- stats::quantile(vals$t[,i], c(0.05/2, 1-0.05/2))
     left = c(left, ci[1])
     right = c(right, ci[2])
     print(paste("Confidence interval", "lambda", i,":", round(ci[1],4),round(ci[2],4)))
@@ -99,21 +99,21 @@ mybootpca = function(data, alpha, iter = 100, cov = TRUE, e_vec = 1)
   left = c()
   right = c()
   for( i in 1:p){
-    ci <- quantile(vec$t[,i], c(0.05/2, 1-0.05/2))
+    ci <- stats::quantile(vec$t[,i], c(0.05/2, 1-0.05/2))
     left = c(left, round(ci[1],4))
     right = c(right, round(ci[2],4))
     print(paste("Confidence interval", "eigen_vector component", i,":", round(ci[1],4),round(ci[2],4)))
   }
   bootvec_ci = list("left" = left, "right" = right)
 
-  z_val = qnorm(alpha/2, lower.tail = FALSE)
+  z_val = stats::qnorm(alpha/2, lower.tail = FALSE)
 
   z_val = sqrt(2)/sqrt(n)*z_val
 
   left_ag = 1 + z_val
   right_ag = 1 - z_val
 
-  z_val = qnorm(0.05/2, lower.tail = FALSE)
+  z_val = stats::qnorm(0.05/2, lower.tail = FALSE)
 
   z_val = sqrt(2)/sqrt(n)*z_val
 
