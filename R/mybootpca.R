@@ -58,24 +58,28 @@ mybootpca = function(data, alpha, iter = 100, cov = TRUE, e_vec = 1)
 
   boot_ci = list("left" = left, "right" = right)
 
+  d = matrix(vals$t, ncol = 1)
+  splice = c()
 
-  val <- rep(1:p, iter*(rep(1,p)))
-  val <- matrix(val,nr = iter, nc = 3, byrow = FALSE)
-  boxplot(vals$t ~ val,
-          xlab = expression(lambda),
-          ylab = "size of lambda")
+  for(i in 1:p)
+  {
+    a = rep(i, length(d)/p)
+    splice = c(splice, a)
+  }
+  da = matrix(c(vals$t,splice), ncol = 2, byrow = FALSE)
+  da = as.data.frame(da)
+
+  for(i in 1:p)
+  {
+    left = ((i-1)*length(d)/p + 1)
+    right = (i*length(d)/p)
+    df = dplyr::slice(da, left:right)
+    g <- ggplot2::ggplot(data = df, ggplot2::aes(x=V2, y=V1)) +
+      ggplot2::geom_violin() + ggplot2::labs(x = "Eigen value number", y = "Eigen value", title = paste("Eigen Value", i,  "Violin plot"))
+    print(g)
+  }
 
 
-  cat <- rep(1:p, iter*(rep(1,p)))
-  cat <- matrix(cat,nr = iter, nc = 3, byrow = FALSE)
-  cat_df = as.data.frame(cat)
-
-  boxplot(vec$t  ~ cat,
-          xlab = "eigen vector component",
-          ylab = "size of eigenvector component")
-
-
-  vec <- boot::boot(df,LAGG4793::vec_estimation_cov, R = iter, p = e_vec)
   d = matrix(vec$t, ncol = 1)
   splice = c()
 
@@ -84,8 +88,12 @@ mybootpca = function(data, alpha, iter = 100, cov = TRUE, e_vec = 1)
     a = rep(i, length(d)/p)
     splice = c(splice, a)
   }
-  da = matrix(c(vec$t,splice), ncol = 2, byrow = FALSE)
+  da = matrix(c(vec$t, splice), ncol = 2, byrow = FALSE)
   da = as.data.frame(da)
+  da$V2 <- as.factor(da$V2)
+  g <- ggplot2::ggplot(data = da, ggplot2::aes(x=V2, y=V1)) +
+    ggplot2::geom_violin() + ggplot2::labs(x = "Eigen vector component", y = "Eigen vector value", title = paste("eigen vector", e_vec))
+  print(g)
 
 
   left = c()
