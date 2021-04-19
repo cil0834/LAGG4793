@@ -21,53 +21,17 @@ mybootpca = function(data, alpha, iter = 100, cov = TRUE, e_vec = 1)
   p = dim(data)[2]
   n = dim(data)[1]
 
-  lambda_estimation_cov <- function(data, indices){
-    S <- cov(data[indices,])
-    E <- eigen(S)
-
-    lambda <-E$values
-    return(c(lambda))
-  }
-
-  lambda_estimation_cor <- function(data, indices){
-    S <- cov2cor(cov(data[indices,]))
-    E <- eigen(S)
-
-    lambda <-E$values
-    return(c(lambda))
-  }
-
-
-  vec_estimation_cov <- function(data, indices, p){
-    S <- cov(data[indices,])
-    E <- eigen(S)
-
-    lambda <-E$vectors[,p]
-    return(c(lambda))
-  }
-
-  vec_estimation_cor <- function(data, indices, p){
-    S <- cov2cor(cov(data[indices,]))
-    E <- eigen(S)
-
-    lambda <-E$vectors[,p]
-    return(c(lambda))
-  }
-
-  vecs = c()
 
   if(cov)
   {
     mat = cov(data)
-    vals <-boot(data,lambda_estimation_cov, R = iter)
-    vec <- boot(data,vec_estimation_cov, R = iter, p = e_vec)
-    vecs = c(vecs, vec)
+    vals <-boot::boot(data,LAGG4793::lambda_estimation_cov, R = iter)
+    vec <- boot::boot(data,LAGG4793::vec_estimation_cov, R = iter, p = e_vec)
     eig_vals = eigen(mat)$values
   }else{
     mat = cov2cor(cov(data))
-    vals <-boot(data,lambda_estimation_cor, R = iter)
-    vec <- boot(data,vec_estimation_cor, R = iter, p = e_vec)
-    vecs = c(vecs, vec)
+    vals <-boot::boot(data,LAGG4793::lambda_estimation_cor, R = iter)
+    vec <- boot::boot(data,LAGG4793::vec_estimation_cor, R = iter, p = e_vec)
     eig_vals = eigen(mat)$values
   }
 
@@ -84,7 +48,6 @@ mybootpca = function(data, alpha, iter = 100, cov = TRUE, e_vec = 1)
   left = c()
   right = c()
 
-
   for(i in 1:p){
     ci <- quantile(vals$t[,i], c(0.05/2, 1-0.05/2))
     left = c(left, ci[1])
@@ -92,12 +55,12 @@ mybootpca = function(data, alpha, iter = 100, cov = TRUE, e_vec = 1)
     print(paste("Confidence interval", "lambda", i,":", round(ci[1],4),round(ci[2],4)))
   }
 
+
   boot_ci = list("left" = left, "right" = right)
+
 
   val <- rep(1:p, iter*(rep(1,p)))
   val <- matrix(val,nr = iter, nc = 3, byrow = FALSE)
-
-
   boxplot(vals$t ~ val,
           xlab = expression(lambda),
           ylab = "size of lambda")
@@ -112,9 +75,7 @@ mybootpca = function(data, alpha, iter = 100, cov = TRUE, e_vec = 1)
           ylab = "size of eigenvector component")
 
 
-  vecs = c()
-
-  vec <- boot(df,vec_estimation_cov, R = 10, p = 1)
+  vec <- boot::boot(df,LAGG4793::vec_estimation_cov, R = iter, p = e_vec)
   d = matrix(vec$t, ncol = 1)
   splice = c()
 
@@ -127,19 +88,22 @@ mybootpca = function(data, alpha, iter = 100, cov = TRUE, e_vec = 1)
   da = as.data.frame(da)
 
 
-
+  left = c()
+  right = c()
   for( i in 1:p){
     ci <- quantile(vec$t[,i], c(0.05/2, 1-0.05/2))
+    left = c(left, round(ci[1],4))
+    right = c(right, round(ci[2],4))
     print(paste("Confidence interval", "eigen_vector component", i,":", round(ci[1],4),round(ci[2],4)))
   }
-
+  bootvec_ci = list("left" = left, "right" = right)
 
   z_val = qnorm(alpha/2, lower.tail = FALSE)
 
   z_val = sqrt(2)/sqrt(n)*z_val
 
   left_ag = 1 + z_val
-  left_ag = 1 - z_val
+  right_ag = 1 - z_val
 
   z_val = qnorm(0.05/2, lower.tail = FALSE)
 
@@ -148,10 +112,10 @@ mybootpca = function(data, alpha, iter = 100, cov = TRUE, e_vec = 1)
   left = round(eig_vals/(1 + z_val),4)
   right = round(eig_vals/(1 - z_val),4)
 
-  A_G = list("left" = left_ag, "right" = left_ag)
+  A_G = list("left" = left, "right" = right)
 
 
-  confidence_intervals = list("AG_ci" = A_G, "Boot_ci" = boot_ci)
+  confidence_intervals = list("AG_ci" = A_G, "Boot_ci" = boot_ci, "Bootvec_ci" = bootvec_ci)
   return(confidence_intervals)
 }
 

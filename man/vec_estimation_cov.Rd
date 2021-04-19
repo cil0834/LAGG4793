@@ -4,7 +4,7 @@
 \alias{vec_estimation_cov}
 \title{vec_estimation_cov}
 \usage{
-vec_estimation_cov(data, indices)
+vec_estimation_cov(data, indices, p)
 }
 \arguments{
 \item{data-}{the data}

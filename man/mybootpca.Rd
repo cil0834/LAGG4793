@@ -4,7 +4,7 @@
 \alias{mybootpca}
 \title{mybootpca}
 \usage{
-mybootpca(data, alpha, iter = 10000, cov = TRUE)
+mybootpca(data, alpha, iter = 100, cov = TRUE, e_vec = 1)
 }
 \arguments{
 \item{data-}{Data for boot strap}
@@ -14,6 +14,8 @@ mybootpca(data, alpha, iter = 10000, cov = TRUE)
 \item{iter-}{number of iterations}
 
 \item{cov-}{covariance}
+
+\item{p-}{eigen vector}
 }
 \value{
 a list with the confidence intervals for Anderson and Girshick and the bootstrap confidence interval
@@ -23,5 +25,6 @@ This function takes in data and makes bootstrap estimates for eigen vectors and 
 }
 \examples{
 df = LAGG4793::project_data
+df$X = NULL
 LAGG4793::mybootpca(df, 0.05)
 }
