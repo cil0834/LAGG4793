@@ -16,21 +16,58 @@
 #' df = LAGG4793::project_data
 #' df$X = NULL
 #' LAGG4793::mybootpca(df, 0.05)
-mybootpca = function(data, alpha, iter = 10000, cov = TRUE, p = 1)
+mybootpca = function(data, alpha, iter = 100, cov = TRUE, e_vec = 1)
 {
   p = dim(data)[2]
   n = dim(data)[1]
 
+  lambda_estimation_cov <- function(data, indices){
+    S <- cov(data[indices,])
+    E <- eigen(S)
+
+    lambda <-E$values
+    return(c(lambda))
+  }
+
+  lambda_estimation_cor <- function(data, indices){
+    S <- cov2cor(cov(data[indices,]))
+    E <- eigen(S)
+
+    lambda <-E$values
+    return(c(lambda))
+  }
+
+
+  vec_estimation_cov <- function(data, indices, p){
+    S <- cov(data[indices,])
+    E <- eigen(S)
+
+    lambda <-E$vectors[,p]
+    return(c(lambda))
+  }
+
+  vec_estimation_cor <- function(data, indices, p){
+    S <- cov2cor(cov(data[indices,]))
+    E <- eigen(S)
+
+    lambda <-E$vectors[,p]
+    return(c(lambda))
+  }
+
+  vecs = c()
+
   if(cov)
   {
-    mat = stats::cov(data)
-    vals <-boot::boot(data,LAGG4793::lambda_estimation_cov, R = iter)
-    vec <- boot::boot(data,LAGG4793::vec_estimation_cov, R = iter, p = p)
+    mat = cov(data)
+    vals <-boot(data,lambda_estimation_cov, R = iter)
+    vec <- boot(data,vec_estimation_cov, R = iter, p = e_vec)
+    vecs = c(vecs, vec)
     eig_vals = eigen(mat)$values
   }else{
-    mat = cov2cor(stats::cov(data))
-    vals <-boot::boot(data,LAGG4793::lambda_estimation_cor, R = iter)
-    vec <- boot::boot(data,LAGG4793::vec_estimation_cor, R = iter, p = p)
+    mat = cov2cor(cov(data))
+    vals <-boot(data,lambda_estimation_cor, R = iter)
+    vec <- boot(data,vec_estimation_cor, R = iter, p = e_vec)
+    vecs = c(vecs, vec)
     eig_vals = eigen(mat)$values
   }
 
@@ -40,7 +77,7 @@ mybootpca = function(data, alpha, iter = 10000, cov = TRUE, p = 1)
     d <- h$density
     den <- d/max(d)
     hist(vals$t[,i], freq = TRUE,
-         col = grDevices::rgb(0,den,1-den^2, 0.7),
+         col = rgb(0,den,1-den^2, 0.7),
          main = expression(paste("Bootstrap distribution of ", widehat(lambda)[i])), xlab = bquote(lambda~.(i)))
   }
 
@@ -48,8 +85,8 @@ mybootpca = function(data, alpha, iter = 10000, cov = TRUE, p = 1)
   right = c()
 
 
-  for( i in 1:p){
-    ci <- stats::quantile(vals$t[,i], c(0.05/2, 1-0.05/2))
+  for(i in 1:p){
+    ci <- quantile(vals$t[,i], c(0.05/2, 1-0.05/2))
     left = c(left, ci[1])
     right = c(right, ci[2])
     print(paste("Confidence interval", "lambda", i,":", round(ci[1],4),round(ci[2],4)))
@@ -57,21 +94,38 @@ mybootpca = function(data, alpha, iter = 10000, cov = TRUE, p = 1)
 
   boot_ci = list("left" = left, "right" = right)
 
-  val <- rep(1:p, 10000*(rep(1,p)))
-  val <- matrix(val,nr = 10000, nc = 3, byrow = FALSE)
+  val <- rep(1:p, iter*(rep(1,p)))
+  val <- matrix(val,nr = iter, nc = 3, byrow = FALSE)
 
 
   boxplot(vals$t ~ val,
           xlab = expression(lambda),
           ylab = "size of lambda")
 
-  cat <- rep(1:p, 10000*(rep(1,p)))
-  cat <- matrix(cat,nr = 10000, nc = 3, byrow = FALSE)
 
+  cat <- rep(1:p, iter*(rep(1,p)))
+  cat <- matrix(cat,nr = iter, nc = 3, byrow = FALSE)
+  cat_df = as.data.frame(cat)
 
-  boxplot(vec$t ~ cat,
-          xlab = "eigen vector",
+  boxplot(vec$t  ~ cat,
+          xlab = "eigen vector component",
           ylab = "size of eigenvector component")
+
+
+  vecs = c()
+
+  vec <- boot(df,vec_estimation_cov, R = 10, p = 1)
+  d = matrix(vec$t, ncol = 1)
+  splice = c()
+
+  for(i in 1:p)
+  {
+    a = rep(i, length(d)/p)
+    splice = c(splice, a)
+  }
+  da = matrix(c(vec$t,splice), ncol = 2, byrow = FALSE)
+  da = as.data.frame(da)
+
 
 
   for( i in 1:p){
@@ -98,5 +152,6 @@ mybootpca = function(data, alpha, iter = 10000, cov = TRUE, p = 1)
 
 
   confidence_intervals = list("AG_ci" = A_G, "Boot_ci" = boot_ci)
-  confidence_intervals
+  return(confidence_intervals)
 }
+
