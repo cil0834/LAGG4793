@@ -37,7 +37,7 @@ head(df)
 ```
 
 
-# PCA Analysis
+# Principle Component Analysis
 Will use two functions to do PCA analysis on the data the first one is defined below and I will use it to get the covariance matrix of the data and to get each principle component of the data.
 
 ```{r}
@@ -187,7 +187,7 @@ $$
 ### Confidence Interval Analysis
 Comparing the confidence intervals we can see that the Bonferroni interval is larger than the Anderson and Girshick. This is particularly interesting, because it does not mean that the Bonferroni interval is worse than the Anderson and Girshick one just because it is larger. This is because a 90% confidence interval does not mean that there is a 90% chance that all values will lie inside of that confidence interval. This is because we used a sample to make the confidence interval, so it may not be completely reflective of the true population.
 
-## PCA Analysis
+## Principle Component Analysis
 I will now determine the number of principle components that should be used in predicting stock market rates of returns. 
 
 ### Scree Plot
