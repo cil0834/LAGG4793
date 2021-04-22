@@ -1,0 +1,226 @@
+---
+title: "Project_2"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Project_2}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(LAGG4793)
+df = LAGG4793::t.84
+```
+
+# Introduction
+The following project is investing a stock market data set. This data set follows the weekly rate of returns for the top 5 companies of the stock market over 103 weeks. The following companies are JP Morgan, Citibank, Wells Fargo, Royal Dutch Shell, and Exxon Mobil. In this project I am going to be doing principle component analysis on this data to try to better understand the data and see if patterns can be drawn from it. 
+
+
+## Importance
+This is an important problem, because being able to accurately predict stock prices can be a good way to find good companies to invest in and make money.Additionally, breaking the data into principle components may be a good way to analyze companies as opposed to just doing analysis on the data itself
+
+
+## Data
+A mentioned, the data is the weekly rate of returns for the top 5 companies on the stock market over a span of 103 weeks. The weekly rate of return is defined as: (current week closing price - the previous week closing price)/previous week closing price. This is a fairly common statistic to look at when analyzing stocks as it is easy to obtain and it can be interpreted.
+
+Below is the first six weeks
+
+```{r}
+head(df)
+```
+
+
+# PCA Analysis
+Will use two functions to do PCA analysis on the data the first one is defined below and I will use it to get the covariance matrix of the data and to get each principle component of the data.
+
+```{r}
+PCA_decomp = LAGG4793::PCA_decomposition(df)
+```
+
+
+## Getting the covariance matrix
+Below is the covariance matrix for the data
+```{r}
+PCA_decomp$covariance
+```
+Using this covariance matrix we can make each principle component 
+
+## Making the principle components
+```{r}
+round(PCA_decomp$PCAs,4)
+```
+Using the above results we can write out each of the principle components using the below formula
+$$
+\hat{y_i} = \hat{e}_i'x = \hat{e_{i1}}x_1 + \hat{e_{i2}}x_2 + \hat{e_{i3}}x_3 + \hat{e_{i4}}x_4 + \hat{e_{i5}}x_5
+$$
+
+The principle components for the stock data is below
+
+### Component 1
+$$
+\hat{y_1} = \hat{e}_1'x = 0.2228x_1 + 0.3073x_2 + 0.1548x_3 + 0.6390x_4 + 0.6509x_5
+$$
+
+### Component 2
+$$
+\hat{y_2} = \hat{e}_2'x = 0.6252x_1 + 0.5704x_2 + 0.3445x_3 -0.2479x_4 -0.3218x_5
+$$
+
+### Component 3
+$$
+\hat{y_3} = \hat{e}_3'x = 0.3261x_1 -0.2496x_2 -0.0376x_3 -0.6425x_4 + 0.6459x_5
+$$
+
+### Component 4
+$$
+\hat{y_4} = \hat{e}_4'x = 0.6628x_1 -0.4141x_2 -0.4970x_3 + 0.3089x_4 -0.2164x_5
+$$
+
+### Component 5
+$$
+\hat{y_5} = \hat{e}_5'x = 0.1177x_1 -0.5886x_2 + 0.7803x_3 + 0.1485x_4 -0.0937x_5
+$$
+
+## Sample variance analysis
+I will now find the sample variance that is expressed by the first three components. This is done by getting the eigen values of the covariance matrix that was derived from the stock data.
+
+```{r}
+variance = PCA_decomp$`sample variances`
+var_sum = PCA_decomp$tot_variance
+```
+
+Below are the percentages that each variance accounts for
+```{r}
+var_1 = variance[1]/var_sum
+var_2 = variance[2]/var_sum
+var_3 = variance[3]/var_sum
+var_1
+var_2
+var_3
+sum(var_1, var_2, var_3)
+```
+
+From above we see that the first component accounts for roughly 53% of the total sample variance.
+
+The second component accounts for roughly 27.1% of the total sample variance.
+
+The third component accounts for roughly 9% of the sample variance.
+
+And together these components account for 89.9% of the total sample variance. This means that the other two principle components are not very useful so we can ignore them when making predictions. It may even be worthwhile to ignore the third principle component as well since it only accounts for 9% of the total sample variance. However, I will investigate this idea in a later part.
+
+
+## Variance Confidence Intervals
+Now I will use the Anderson and Girshick confidence interval for estimating the sample variances $\lambda_i$ seen below to make a Bonferroni confidence interval for estimating $\lambda_i$
+
+$$
+\frac{\hat{\lambda}_i}{(1+z_{\frac{\alpha}{2}}\sqrt{\frac{2}{n}})} \leq \lambda_i \leq \frac{\hat{\lambda}_i}{(1-z_{\frac{\alpha}{2}}\sqrt{\frac{2}{n}})}
+$$
+
+To make the Bonferroni confidence interval we replace $z_{\frac{\alpha}{2}}$ with $z_{\frac{\alpha}{2p}}$
+
+Thus the Bonferroni confidence interval is seen below
+$$
+\frac{\hat{\lambda}_i}{(1+z_{\frac{\alpha}{2p}}\sqrt{\frac{2}{n}})} \leq \lambda_i \leq \frac{\hat{\lambda}_i}{(1-z_{\frac{\alpha}{2p}}\sqrt{\frac{2}{n}})}
+$$
+
+Using the lambda_ci function I can make 90% confidence intervals for the first three variance terms using both the Anderson and Girshick and the Bonferroni confidence intervals.
+```{r}
+cis = LAGG4793::lambda_ci(t.84, dimensions = 3, alpha = 0.1)
+cis
+```
+
+### Anderson and Girshick Confidence Interval
+Below are the confidence intervals for the variance terms using the Anderson and Girshick confidence interval
+
+#### Variance 1
+From the above function we see that the confidence interval for the first variance term is
+
+$$
+0.0011126527 \leq \lambda_1 \leq 0.0017743727
+$$
+
+#### Variance 2
+From the above function we see that the confidence interval for the second variance term is
+
+$$
+0.0005704172 \leq \lambda_2 \leq 0.000909657
+$$
+
+#### Variance 3
+From the above function we see that the confidence interval for the third variance term is
+
+$$
+0.0002064769 \leq \lambda_3 \leq 0.0003292735
+$$
+
+### Bonferroni Confidence Interval
+Below are the confidence intervals for the variance terms using the Bonferroni confidence interval
+
+#### Variance 1
+From the above function we see that the confidence interval for the first variance term is
+
+$$
+0.0010328579 \leq \lambda_1 \leq 0.0020236973 
+$$
+
+#### Variance 2
+From the above function we see that the confidence interval for the second variance term is
+
+$$
+0.0005295092 \leq \lambda_2 \leq 0.0010374771 
+$$
+
+#### Variance 3
+From the above function we see that the confidence interval for the third variance term is
+
+$$
+0.0001916693 \leq \lambda_3 \leq 0.0003755411
+$$
+
+### Confidence Interval Analysis
+Comparing the confidence intervals we can see that the Bonferroni interval is larger than the Anderson and Girshick. This is particularly interesting, because it does not mean that the Bonferroni interval is worse than the Anderson and Girshick one just because it is larger. This is because a 90% confidence interval does not mean that there is a 90% chance that all values will lie inside of that confidence interval. This is because we used a sample to make the confidence interval, so it may not be completely reflective of the true population.
+
+## PCA Analysis
+I will now determine the number of principle components that should be used in predicting stock market rates of returns. 
+
+### Scree Plot
+Below is the scree plot for the data
+```{r}
+pca = princomp(t.84)
+screeplot(pca)
+```
+
+From the scree plot most of the variance is in the first two principle components. Additionally from above we know that it is actually about 81% of the variance. As a result I would recommend only using principle components 1 and two in any predictions.
+
+# Conclusion
+
+## Investigating the Principle Components
+To conclude I would recommend using only the first two principle components to make any predictions or do any analysis. This means that the stock return data can be summarized in two dimensions.
+
+
+### PC1
+These principle components are seen below
+$$
+\hat{y_1} = \hat{e}_1'x = 0.2228x_1 + 0.3073x_2 + 0.1548x_3 + 0.6390x_4 + 0.6509x_5
+$$
+Looking at the first principle component we see that when the stocks increase so too do the principle components. We also notice that Royal Dutch Shell and Exxon and Mobile increase the principle component the most due to having high coefficients. Since the principle component increases or decreases based on the x inputs this principle component could represent market health. A positive value means a positive market and a negative one represents a negative market.
+
+### PC2
+$$
+\hat{y_2} = \hat{e}_2'x = 0.6252x_1 + 0.5704x_2 + 0.3445x_3 -0.2479x_4 -0.3218x_5
+$$
+Looking at the second component we see that JP Morgan, Citibank and Wells Fargo increase together whereas Dutch Shell and Exxon decrease together. Thus the principle component changes based on how well the oil companies and banks are doing. A negative value could mean oil companies are doing well whereas a positive value means the banking companies are doing well. 
+
+
+### Recommendations and Future Work
+However, just because the stock return data can be summarized in two dimensions does not mean stock return data is a good predictor of stock market price especially if one were wanting to predict the future stock price. However, principle component analysis can be used to determine the health of an industry or the market as a whole. 
+
+
+Something interesting to look at as well is to compare small market stocks vs large market stocks as a way to dive deeper into how stocks move.

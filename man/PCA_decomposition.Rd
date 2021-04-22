@@ -7,17 +7,17 @@
 PCA_decomposition(df)
 }
 \arguments{
-\item{df-}{a data frame}
+\item{df-}{the data}
 }
 \value{
-A list containing the covariance matrix, a matrix of the PCA components, the total variance, and a correlation
-matrix between each component X of each principle component and each principle component
+a list that contains the covariance matrix for the input data,
+a matrix contianing the components of each principle component, the total sample variance, and the correlation matrix
+between the x components and the principle components
 }
 \description{
-This function takes in data and uses that data to make PCA components
-The components include a covariance matrix of the data, a matrix of each of the makeup of each principle component,
-the total sample variance of the PCA decomposition, and a covariance matrix between the variables of
-the input data and each PCA component.
+This function takes in data and returns a list that contains the covariance matrix for the input data,
+a matrix contianing the components of each principle component, the total sample variance, and the correlation matrix
+between the x components and the principle components
 }
 \examples{
 df = LAGG4793::t.84

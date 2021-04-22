@@ -1,21 +1,21 @@
 #' PCA_decomposition
 #'
-#' @description This function takes in data and uses that data to make PCA components
-#' The components include a covariance matrix of the data, a matrix of each of the makeup of each principle component,
-#' the total sample variance of the PCA decomposition, and a covariance matrix between the variables of
-#' the input data and each PCA component.
+#' @description This function takes in data and returns a list that contains the covariance matrix for the input data,
+#' a matrix contianing the components of each principle component, the total sample variance, and the correlation matrix
+#' between the x components and the principle components
 #'
-#' @param df- a data frame
+#' @param df- the data
 #'
-#' @return A list containing the covariance matrix, a matrix of the PCA components, the total variance, and a correlation
-#' matrix between each component X of each principle component and each principle component
+#' @return a list that contains the covariance matrix for the input data,
+#' a matrix contianing the components of each principle component, the total sample variance, and the correlation matrix
+#' between the x components and the principle components
 #' @export
 #'
 #' @examples
 #' df = LAGG4793::t.84
 #' PCA_decomposition(df)
 PCA_decomposition = function(df){
-  S = stats::cov(df)
+  S = cov(df)
   p = dim(S)[1]
   eigens_sig = eigen(S)
   values_sig = eigens_sig$values
@@ -41,7 +41,11 @@ PCA_decomposition = function(df){
     }
   }
 
+
+
   corr_sig_mat = matrix(corr_sig, nrow = num_p, byrow = TRUE)
 
-  output = list("covariance" = S, "PCAs" = pc_sig_df, "tot_variance" =  samp_var, "correlation_matrix" = corr_sig_mat)
+  output = list("covariance" = S, "PCAs" = pc_sig_df, "tot_variance" =  samp_var, "correlation_matrix" = corr_sig_mat,
+                "sample variances" = values_sig)
+  return(output)
 }
